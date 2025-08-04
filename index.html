@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa Interativo - Diagnóstico Ambiental Rural</title>
+    <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mapbox/mapbox-gl-draw@1.4.3/dist/mapbox-gl-draw.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+</head>
+<body>
+    <div id="loading" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Carregando...</span>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="d-flex align-items-center my-3">
+            <img src="logo.png" alt="Logo da Empresa" class="logo me-3">
+            <h1 class="text-center flex-grow-1">Diagnóstico Ambiental Rural - Fazenda Modelo</h1>
+        </div>
+        <button class="btn btn-primary d-md-none mb-2" type="button" data-bs-toggle="collapse" data-bs-target="#dashboardCollapse" aria-expanded="true" aria-controls="dashboardCollapse">
+            Mostrar/Ocultar Painel
+        </button>
+        <div class="row">
+            <div class="col-12 col-md-3 collapse show" id="dashboardCollapse">
+                <div class="dashboard">
+                    <h3>Filtros</h3>
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="showConforme" checked aria-label="Exibir feições conformes">
+                        <label class="form-check-label" for="showConforme">Conforme</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="showNaoConforme" checked aria-label="Exibir feições não conformes">
+                        <label class="form-check-label" for="showNaoConforme">Não Conforme</label>
+                    </div>
+                    <h3 class="mt-3">Camadas</h3>
+                    <div class="accordion" id="layersAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingAmbiental">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAmbiental" aria-expanded="true" aria-controls="collapseAmbiental">
+                                    Áreas Ambientais
+                                </button>
+                            </h2>
+                            <div id="collapseAmbiental" class="accordion-collapse collapse show" aria-labelledby="headingAmbiental" data-bs-parent="#layersAccordion">
+                                <div class="accordion-body">
+                                    <div class="form-check camadas">
+                                        <input type="checkbox" class="form-check-input" id="layerAreaDaPropriedade" checked aria-label="Exibir Área Declarada no CAR">
+                                        <label class="form-check-label" for="layerAreaDaPropriedade">Área Declarada no CAR</label>
+                                        <span id="errorAreaDaPropriedade" class="error-message"></span>
+                                    </div>
+                                    <div class="form-check camadas">
+                                        <input type="checkbox" class="form-check-input" id="layerAreaConsolidada" checked aria-label="Exibir Área Consolidada">
+                                        <label class="form-check-label" for="layerAreaConsolidada">Área Consolidada</label>
+                                        <span id="errorAreaConsolidada" class="error-message"></span>
+                                    </div>
+                                    <div class="form-check camadas">
+                                        <input type="checkbox" class="form-check-input" id="layerAPP" checked aria-label="Exibir APP">
+                                        <label class="form-check-label" for="layerAPP">APP</label>
+                                        <span id="errorAPP" class="error-message"></span>
+                                    </div>
+                                    <div class="form-check camadas">
+                                        <input type="checkbox" class="form-check-input" id="layerReservaLegal" checked aria-label="Exibir Reserva Legal">
+                                        <label class="form-check-label" for="layerReservaLegal">Reserva Legal</label>
+                                        <span id="errorReservaLegal" class="error-message"></span>
+                                    </div>
+                                    <div class="form-check camadas">
+                                        <input type="checkbox" class="form-check-input" id="layerVegetacaoNativa" checked aria-label="Exibir Vegetação Nativa">
+                                        <label class="form-check-label" for="layerVegetacaoNativa">Vegetação Nativa</label>
+                                        <span id="errorVegetacaoNativa" class="error-message"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingHidrografia">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHidrografia" aria-expanded="false" aria-controls="collapseHidrografia">
+                                    Hidrografia
+                                </button>
+                            </h2>
+                            <div id="collapseHidrografia" class="accordion-collapse collapse" aria-labelledby="headingHidrografia" data-bs-parent="#layersAccordion">
+                                <div class="accordion-body">
+                                    <div class="form-check camadas">
+                                        <input type="checkbox" class="form-check-input" id="layerNascentes" checked aria-label="Exibir Nascentes">
+                                        <label class="form-check-label" for="layerNascentes">Nascentes</label>
+                                        <span id="errorNascentes" class="error-message"></span>
+                                    </div>
+                                    <div class="form-check camadas">
+                                        <input type="checkbox" class="form-check-input" id="layerHidrografia" checked aria-label="Exibir Hidrografia">
+                                        <label class="form-check-label" for="layerHidrografia">Hidrografia</label>
+                                        <span id="errorHidrografia" class="error-message"></span>
+                                    </div>
+                                    <div class="form-check camadas">
+                                        <input type="checkbox" class="form-check-input" id="layerReservatorio" checked aria-label="Exibir Reservatório">
+                                        <label class="form-check-label" for="layerReservatorio">Reservatório</label>
+                                        <span id="errorReservatorio" class="error-message"></span>
+                                    </div>
+                                    <div class="form-check camadas">
+                                        <input type="checkbox" class="form-check-input" id="layerLagoaContencao" checked aria-label="Exibir Lagoa de Contenção">
+                                        <label class="form-check-label" for="layerLagoaContencao">Lagoa de Contenção</label>
+                                        <span id="errorLagoaContencao" class="error-message"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingInfra">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInfra" aria-expanded="false" aria-controls="collapseInfra">
+                                    Infraestrutura
+                                </button>
+                            </h2>
+                            <div id="collapseInfra" class="accordion-collapse collapse" aria-labelledby="headingInfra" data-bs-parent="#layersAccordion">
+                                <div class="accordion-body">
+                                    <div class="form-check camadas">
+                                        <input type="checkbox" class="form-check-input" id="layerBarracaoConstrucao" checked aria-label="Exibir Barracão Construção">
+                                        <label class="form-check-label" for="layerBarracaoConstrucao">Barracão Construção</label>
+                                        <span id="errorBarracaoConstrucao" class="error-message"></span>
+                                    </div>
+                                    <div class="form-check camadas">
+                                        <input type="checkbox" class="form-check-input" id="layerBarracao1" checked aria-label="Exibir Barracão 1">
+                                        <label class="form-check-label" for="layerBarracao1">Barracão 1</label>
+                                        <span id="errorBarracao1" class="error-message"></span>
+                                    </div>
+                                    <div class="form-check camadas">
+                                        <input type="checkbox" class="form-check-input" id="layerConfinamento" checked aria-label="Exibir Confinamento">
+                                        <label class="form-check-label" for="layerConfinamento">Confinamento</label>
+                                        <span id="errorConfinamento" class="error-message"></span>
+                                    </div>
+                                    <div class="form-check camadas">
+                                        <input type="checkbox" class="form-check-input" id="layerEscritorio" checked aria-label="Exibir Escritório">
+                                        <label class="form-check-label" for="layerEscritorio">Escritório</label>
+                                        <span id="errorEscritorio" class="error-message"></span>
+                                    </div>
+                                    <div class="form-check camadas">
+                                        <input type="checkbox" class="form-check-input" id="layerResiduos" checked aria-label="Exibir Resíduos">
+                                        <label class="form-check-label" for="layerResiduos">Resíduos</label>
+                                        <span id="errorResiduos" class="error-message"></span>
+                                    </div>
+                                    <div class="form-check camadas">
+                                        <input type="checkbox" class="form-check-input" id="layerSede" checked aria-label="Exibir Sede">
+                                        <label class="form-check-label" for="layerSede">Sede</label>
+                                        <span id="errorSede" class="error-message"></span>
+                                    </div>
+                                    <div class="form-check camadas">
+                                        <input type="checkbox" class="form-check-input" id="layerServidaoAdministrativa" checked aria-label="Exibir Servidão Administrativa">
+                                        <label class="form-check-label" for="layerServidaoAdministrativa">Servidão Administrativa</label>
+                                        <span id="errorServidaoAdministrativa" class="error-message"></span>
+                                    </div>
+                                    <div class="form-check camadas">
+                                        <input type="checkbox" class="form-check-input" id="layerSilo" checked aria-label="Exibir Silo">
+                                        <label class="form-check-label" for="layerSilo">Silo</label>
+                                        <span id="errorSilo" class="error-message"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <h3 class="mt-3">Ferramentas de Medição</h3>
+                    <button class="btn btn-light btn-sm mb-2 touch-friendly" id="drawLine" aria-label="Iniciar medição de distância">Medir Distância</button>
+                    <button class="btn btn-light btn-sm mb-2 touch-friendly" id="drawPolygon" aria-label="Iniciar medição de área">Medir Área</button>
+                    <button class="btn btn-light btn-sm mb-2 touch-friendly" id="clearDraw" aria-label="Limpar medições">Limpar Medição</button>
+                    <div id="measurementResult" class="mt-2"></div>
+                    <h3 class="mt-3">Resumo</h3>
+                    <div id="summary" class="summary">
+                        <p>Área Declarada no CAR: <span id="areaPropriedade"></span> ha</p>
+                        <p>Área Consolidada: <span id="areaConsolidada"></span> ha</p>
+                        <p>Área APP: <span id="areaAPP"></span> ha</p>
+                        <p>Reserva Legal: <span id="areaReserva"></span> ha</p>
+                        <p>Área Reservatório: <span id="areaReservatorio"></span> ha</p>
+                        <p>Vegetação Nativa: <span id="areaVegetacaoNativa"></span> ha</p>
+                        <p>Servidão Administrativa: <span id="areaServidaoAdministrativa"></span> ha</p>
+                        <p>Nascentes: <span id="countNascentes"></span></p>
+                    </div>
+                    <h3 class="mt-3">Exportar</h3>
+                    <button class="btn btn-primary btn-sm mb-2 touch-friendly" id="exportPDF" aria-label="Exportar relatório em PDF">Exportar Relatório (PDF)</button>
+                </div>
+            </div>
+            <div class="col-12 col-md-9 map-container">
+                <div id="map"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mapbox/mapbox-gl-draw@1.4.3/dist/mapbox-gl-draw.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>
