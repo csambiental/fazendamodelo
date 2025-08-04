@@ -150,7 +150,7 @@ h1 {
 }
 
 .map-container {
-    height: calc(100vh - 150px); /* Ajusta altura do mapa */
+    height: calc(100vh); /* Ajusta altura do mapa */
 }
 
 #map {
@@ -217,4 +217,5 @@ h1 {
 #showConforme + label,
 #showNaoConforme + label {
     color: #ffffff !important;
+
 }
