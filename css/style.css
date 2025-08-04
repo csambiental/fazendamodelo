@@ -1,0 +1,220 @@
+body {
+    background-color: #f8f9fa;
+}
+
+.legend {
+    background: white;
+    padding: 8px;
+    position: absolute;
+    top: 50px;
+    right: 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    max-width: 200px;
+}
+
+.legend i {
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    margin-right: 6px;
+    vertical-align: middle;
+}
+
+.legend h4 {
+    margin-top: 0;
+    font-size: 12px;
+}
+
+.legend strong {
+    font-size: 12px;
+    margin-top: 6px;
+    display: block;
+}
+
+.dashboard {
+    background-color: #333333;
+    color: #ffffff;
+    padding: 10px;
+    border-radius: 5px;
+    height: auto;
+    max-height: 80vh;
+    overflow-y: auto;
+    font-size: 0.9rem;
+}
+
+.dashboard h3 {
+    color: #ffffff !important;
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+}
+
+.dashboard .form-check {
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+}
+
+.dashboard .form-check-input {
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-right: 8px;
+}
+
+.dashboard .form-check-label {
+    color: #000000 !important;
+    font-size: 1rem !important;
+    font-weight: 400 !important;
+    line-height: 1.5 !important;
+    display: inline-block !important;
+    min-width: 150px;
+    padding-left: 8px;
+    margin: 0;
+    z-index: 100 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    background: transparent !important;
+    overflow: visible !important;
+}
+
+@media (forced-colors: active) {
+    .dashboard .form-check-label {
+        color: CanvasText !important;
+        background-color: Canvas !important;
+    }
+}
+
+.dashboard .error-message {
+    color: #ff5555;
+    font-size: 0.8rem;
+    margin-left: 8px;
+}
+
+.dashboard .accordion-button {
+    font-size: 0.9rem;
+    padding: 10px;
+    color: #ffffff !important;
+    background-color: #444444 !important;
+}
+
+.dashboard .accordion-button:not(.collapsed) {
+    color: #ffffff !important;
+    background-color: #555555 !important;
+}
+
+.dashboard .accordion-body {
+    padding: 10px;
+}
+
+#summary {
+    color: #ffffff;
+    font-size: 0.8rem;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+#summary p {
+    margin-bottom: 2px;
+}
+
+#measurementResult {
+    color: #ffffff;
+    font-size: 0.8rem;
+    margin-bottom: 8px;
+    min-height: 20px;
+}
+
+.logo {
+    height: 50px;
+    width: auto;
+}
+
+h1 {
+    color: #333333;
+    font-size: 1.5rem;
+}
+
+.mapboxgl-ctrl.mapboxgl-ctrl-compass {
+    top: 10px;
+    right: 10px;
+}
+
+.mapboxgl-ctrl.mapboxgl-ctrl-scale {
+    bottom: 15px;
+    left: 15px;
+    background: white;
+    border: 2px solid #333;
+    border-radius: 3px;
+    font-size: 12px;
+}
+
+.map-container {
+    height: calc(100vh - 150px); /* Ajusta altura do mapa */
+}
+
+#map {
+    width: 100%;
+    height: 100%;
+}
+
+.touch-friendly {
+    padding: 10px 15px;
+    font-size: 1rem;
+}
+
+@media (max-width: 576px) {
+    .dashboard {
+        max-height: 50vh;
+        margin-bottom: 10px;
+    }
+    .map-container {
+        height: calc(100vh - 200px);
+    }
+    .col-12 {
+        max-width: 100%;
+    }
+    .legend {
+        top: 60px;
+        right: 10px;
+        max-width: 150px;
+        font-size: 0.8rem;
+    }
+    .legend i {
+        width: 12px;
+        height: 12px;
+    }
+    h1 {
+        font-size: 1.2rem;
+    }
+    .logo {
+        height: 40px;
+    }
+    .dashboard .form-check-input {
+        width: 1.8rem;
+        height: 1.8rem;
+    }
+    .dashboard .form-check-label {
+        font-size: 0.9rem !important;
+    }
+    .touch-friendly {
+        width: 100%;
+        padding: 12px;
+        font-size: 1.1rem;
+    }
+}
+
+/* Estilo exclusivo para os checkboxes das CAMADAS */
+.dashboard .form-check.camadas .form-check-label {
+    background-color: #ffffff !important;
+    color: #444444 !important;
+    padding: 5px 10px;
+    border-radius: 4px;
+    margin-bottom: 5px;
+}
+
+/* Texto branco para os labels dos filtros "Conforme" e "Não Conforme" */
+#showConforme + label,
+#showNaoConforme + label {
+    color: #ffffff !important;
+}
