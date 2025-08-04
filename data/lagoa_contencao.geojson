@@ -1,0 +1,9 @@
+{
+"type": "FeatureCollection",
+"name": "lagoa_contencao",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "id": "1", "Avaliação": "Não Conforme", "Observação": "Escavação não impermeabilizada" }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ -51.278665531579385, -23.828727779134763 ], [ -51.27849367330829, -23.828776472311574 ], [ -51.278556688007697, -23.828994159454965 ], [ -51.278728546278792, -23.828945466278153 ], [ -51.278665531579385, -23.828727779134763 ] ] ] ] } },
+{ "type": "Feature", "properties": { "id": "2", "Avaliação": "Não Conforme", "Observação": "Escavação não impermeabilizada" }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ -51.278724249822012, -23.828972677171077 ], [ -51.278566713073509, -23.829017789967242 ], [ -51.278606813336765, -23.829155276584121 ], [ -51.278765066161398, -23.829108015559569 ], [ -51.278724249822012, -23.828972677171077 ] ] ] ] } }
+]
+}

@@ -1,0 +1,8 @@
+{
+"type": "FeatureCollection",
+"name": "barracao_construcao",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "id": 1, "Avaliaçã": "Conforme", "Tema": "Barracão em construção", "Aprovaçã": "Operação compreende a NR 18" }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ -51.280742107600446, -23.828141223274923 ], [ -51.280475727280262, -23.828209966583358 ], [ -51.280512247162868, -23.828357120227981 ], [ -51.280778090425962, -23.828285691634058 ], [ -51.280742107600446, -23.828141223274923 ] ] ] ] } }
+]
+}

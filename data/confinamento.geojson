@@ -1,0 +1,8 @@
+{
+"type": "FeatureCollection",
+"name": "confinamento",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "id": 1, "tema": "Confinamento de Gado", "avaliaçã": "Conforme", "Info": "400 cabeças de Gado em Confinamento", "aprovaçã": "Inspecionado de acordo com a NR 31" }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ -51.278887696445722, -23.829083063002937 ], [ -51.280358378993661, -23.828702682763684 ], [ -51.280227651656062, -23.828226980507441 ], [ -51.278762416080532, -23.828594651144428 ], [ -51.278887696445722, -23.829083063002937 ] ] ] ] } }
+]
+}

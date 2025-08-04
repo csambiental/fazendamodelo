@@ -1,0 +1,8 @@
+{
+"type": "FeatureCollection",
+"name": "escritorio",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "id": 1, "Avaliaçã": "Conforme", "Tema": "Escritório" }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ -51.281304630154906, -23.828336980587039 ], [ -51.281076201869567, -23.828396593924818 ], [ -51.281121672703804, -23.828575254919155 ], [ -51.281352607255577, -23.828511703162643 ], [ -51.281304630154906, -23.828336980587039 ] ] ] ] } }
+]
+}
