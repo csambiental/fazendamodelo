@@ -54,7 +54,7 @@ const layers = {
 
 // Mapeamento de nomes das camadas
 const layerNames = {
-    'AreaDaPropriedade': 'Área Declarada no CAR',
+    'AreaDaPropriedade': 'Área do Imóvel',
     'AreaDaPropriedadeOutline': 'Perímetro da Propriedade',
     'AreaConsolidada': 'Área Consolidada',
     'APP': 'APP',
@@ -86,27 +86,38 @@ const infraLayers = [
     'Silo'
 ];
 
-// Mapeamento de propriedades dos GeoJSON
-const layerProperties = {
-    'AreaDaPropriedade': { area: 'num_area', conformidade: 'des_condic', detalhes: 'cod_imovel', fallbackArea: 530.18, fallbackConformidade: 'N/A', fallbackDetalhes: 'N/A' },
-    'AreaConsolidada': { area: 'area', conformidade: null, detalhes: 'tema', fallbackArea: 424.84, fallbackConformidade: 'Conforme', fallbackDetalhes: 'Área Consolidada' },
-    'APP': { area: 'area', conformidade: null, detalhes: 'tema', fallbackArea: 37.44, fallbackConformidade: 'Conforme', fallbackDetalhes: 'APP Total' },
-    'ReservaLegal': { area: 'area', conformidade: null, detalhes: 'tema', fallbackArea: 164.08, fallbackConformidade: 'Conforme', fallbackDetalhes: 'Reserva Legal Proposta' },
-    'Reservatorio': { area: 'area', conformidade: null, detalhes: 'tema', fallbackArea: 7.35, fallbackConformidade: 'N/A', fallbackDetalhes: 'Reservatório artificial decorrente de barramento ou represamento de cursos d\'água naturais, Outorga: 11.520' },
-    'VegetacaoNativa': { area: 'area', conformidade: null, detalhes: 'tema', fallbackArea: 82.04, fallbackConformidade: 'Conforme', fallbackDetalhes: 'Remanescente de Vegetação Nativa' },
-    'ServidaoAdministrativa': { area: 'area', conformidade: null, detalhes: 'tema', fallbackArea: 26.49, fallbackConformidade: 'Conforme', fallbackDetalhes: 'Infraestrutura Pública, Área de Servidão Administrativa Total' },
-    'Nascentes': { area: null, conformidade: null, detalhes: 'tema', fallbackArea: null, fallbackConformidade: 'Conforme', fallbackDetalhes: 'Nascente ou olho d\'água perene' },
-    'Hidrografia': { area: 'area', conformidade: null, detalhes: 'tema', fallbackArea: 4.38, fallbackConformidade: 'Conforme', fallbackDetalhes: 'Curso d\'água natural de até 10 metros' },
-    'AreaDaPropriedadeOutline': { area: null, conformidade: 'des_condic', detalhes: 'cod_imovel', fallbackArea: null, fallbackConformidade: 'N/A', fallbackDetalhes: 'N/A' },
-    'BarracaoConstrucao': { area: null, conformidade: 'Avaliaçã', detalhes: 'Aprovaçã', fallbackArea: 0.05, fallbackConformidade: 'Conforme', fallbackDetalhes: 'Operação compreende a NR 18' },
-    'Barracao1': { area: null, conformidade: null, detalhes: null, fallbackArea: 0.06, fallbackConformidade: 'N/A', fallbackDetalhes: 'Barracão de armazenamento' },
-    'Confinamento': { area: null, conformidade: 'avaliaçã', detalhes: 'Info', fallbackArea: 0.86, fallbackConformidade: 'Conforme', fallbackDetalhes: '400 cabeças de Gado em Confinamento' },
-    'Escritorio': { area: null, conformidade: 'Avaliaçã', detalhes: 'Tema', fallbackArea: 0.05, fallbackConformidade: 'Conforme', fallbackDetalhes: 'Escritório' },
-    'LagoaContencao': { area: null, conformidade: 'Avaliação', detalhes: 'Observação', fallbackArea: 0.07, fallbackConformidade: 'Não Conforme', fallbackDetalhes: 'Escavação não impermeabilizada' },
-    'Residuos': { area: null, conformidade: 'Avaliaçã', detalhes: 'Norma', fallbackArea: 0.10, fallbackConformidade: 'Conforme', fallbackDetalhes: 'Baia de Armazenamento de Resíduos Sólidos, Norma: NBR 11.174' },
-    'Sede': { area: null, conformidade: null, detalhes: null, fallbackArea: 0.02, fallbackConformidade: 'N/A', fallbackDetalhes: 'Sede Administrativa da Fazenda' },
-    'Silo': { area: null, conformidade: 'Avaliaçã', detalhes: 'tema', fallbackArea: 0.13, fallbackConformidade: 'Conforme', fallbackDetalhes: 'Silos' }
+// Esquema padronizado dos atributos (todas as camadas usam os mesmos campos)
+//   tema      -> nome da feição
+//   situacao  -> Conforme | Em adequação | Não Conforme (só estruturas avaliadas)
+//   descricao -> detalhes exibidos no pop-up
+//   area      -> área em hectares (opcional; se ausente, é calculada)
+const STATUS_COLORS = {
+    'Conforme': '#2e9e5b',
+    'Em adequação': '#e0a100',
+    'Não Conforme': '#d43d3d'
 };
+const STATUS_FILTER_IDS = {
+    'Conforme': 'showConforme',
+    'Em adequação': 'showEmAdequacao',
+    'Não Conforme': 'showNaoConforme'
+};
+
+// Formata número no padrão brasileiro
+function fmt(n, casas = 2) {
+    return Number(n).toLocaleString('pt-BR', { minimumFractionDigits: casas, maximumFractionDigits: casas });
+}
+
+// Situações marcadas nos filtros
+function getAllowedStatuses() {
+    return Object.entries(STATUS_FILTER_IDS)
+        .filter(([, id]) => document.getElementById(id)?.checked)
+        .map(([status]) => status);
+}
+
+// Filtro: feições sem avaliação sempre aparecem; as avaliadas seguem os filtros
+function getStatusFilter() {
+    return ['any', ['!', ['has', 'situacao']], ['in', ['get', 'situacao'], ['literal', getAllowedStatuses()]]];
+}
 
 // Documentos anexos por camada (licenças, outorgas etc.)
 // Para anexar um novo documento a outra camada, basta adicionar uma entrada aqui.
@@ -139,16 +150,28 @@ document.getElementById('docModal').addEventListener('hidden.bs.modal', () => {
 });
 
 // Função para gerar conteúdo do pop-up
-function generatePopupContent(layerName, properties) {
-    const displayName = layerNames[layerName] || layerName;
-    const props = layerProperties[layerName] || {};
-    const area = props.area && properties[props.area] ? properties[props.area].toFixed(2) : props.fallbackArea ? props.fallbackArea.toFixed(2) : 'N/A';
-    const conformidade = props.conformidade && properties[props.conformidade] ? properties[props.conformidade] : props.fallbackConformidade || 'N/A';
-    const detalhes = props.detalhes && properties[props.detalhes] ? properties[props.detalhes] : props.fallbackDetalhes || 'N/A';
-    console.log(`[DEBUG] Gerando pop-up para ${layerName}: Área=${area}, Conformidade=${conformidade}, Detalhes=${detalhes}`);
+function generatePopupContent(layerName, feature) {
+    const properties = feature.properties || {};
+    const displayName = properties.tema || layerNames[layerName] || layerName;
+    let areaTxt = '';
+    if (typeof properties.area === 'number') {
+        areaTxt = `${fmt(properties.area)} ha`;
+    } else if (feature.geometry && feature.geometry.type.includes('Polygon')) {
+        const ha = turf.area(feature) / 10000;
+        areaTxt = ha < 1 ? `${fmt(ha * 10000, 0)} m²` : `${fmt(ha)} ha`;
+    }
+    const situacao = properties.situacao;
+    const badge = situacao
+        ? `<span class="status-badge" style="background:${STATUS_COLORS[situacao] || '#777'}">${situacao}</span>`
+        : '';
     const doc = layerDocuments[layerName];
-    const docButton = doc ? `<button type="button" class="btn btn-warning btn-sm w-100 mt-1" onclick="openLayerDocument('${layerName}')">📄 Ver ${doc.titulo.split(' (')[0]}</button>` : '';
-    return `<h3>${displayName}</h3><p>Área: ${area}${props.area || props.fallbackArea ? ' ha' : ''}<br>Conformidade: ${conformidade}<br>Detalhes: ${detalhes}</p>${docButton}`;
+    const docButton = doc ? `<button type="button" class="btn btn-warning btn-sm w-100 mt-2" onclick="openLayerDocument('${layerName}')">📄 Ver ${doc.titulo.split(' (')[0]}</button>` : '';
+    return `<div class="popup">
+        <h3>${displayName}</h3>
+        ${badge}
+        <p>${properties.descricao || ''}${areaTxt ? `<br><strong>Área:</strong> ${areaTxt}` : ''}</p>
+        ${docButton}
+    </div>`;
 }
 
 // Função para carregar GeoJSON e adicionar camada
@@ -255,30 +278,28 @@ async function loadLayer(layerName, config, beforeLayer = null) {
         } else if (config.type === 'circle') {
             layerConfig.paint = config.paint;
         }
-        // Aplicar filtro apenas para camadas com conformidade
+        // Filtro de situação (feições sem avaliação sempre aparecem)
         if (layerName !== 'AreaDaPropriedade' && layerName !== 'AreaDaPropriedadeOutline') {
-            const props = layerProperties[layerName] || {};
-            const conformidadeKey = props.conformidade || 'conformidade';
-            console.log(`[DEBUG] Configurando filtro para ${layerName} com chave de conformidade: ${conformidadeKey}`);
-            layerConfig.filter = ['any', ['!', ['has', conformidadeKey]], ['==', ['get', conformidadeKey], 'Conforme'], ['==', ['get', conformidadeKey], 'Não Conforme']];
+            layerConfig.filter = getStatusFilter();
         }
         if (!map.getLayer(layerName)) {
             map.addLayer(layerConfig, beforeLayer);
-            console.log(`[DEBUG] Camada ${layerName} adicionada ao mapa${beforeLayer ? ` antes de ${beforeLayer}` : ''}`);
-        } else {
-            console.log(`[DEBUG] Camada ${layerName} já existe, ignorando adição`);
         }
-        // Adicionar evento de clique, exceto para AreaDaPropriedade
-        if (layerName !== 'AreaDaPropriedade') {
-            // Remover eventos de clique existentes para evitar duplicatas
-            map.off('click', layerName);
-            map.on('click', layerName, (e) => {
-                if (e.features && e.features.length > 0) {
-                    console.log(`[DEBUG] Clique na camada ${layerName}:`, e.features[0].properties);
-                    new mapboxgl.Popup()
-                        .setLngLat(e.lngLat)
-                        .setHTML(generatePopupContent(layerName, e.features[0].properties))
-                        .addTo(map);
+        // Semáforo: contorno colorido conforme a situação das estruturas avaliadas
+        const temSituacao = data.features && data.features.some(f => f.properties && f.properties.situacao);
+        if (config.type === 'fill' && temSituacao && !map.getLayer(`${layerName}Status`)) {
+            map.addLayer({
+                id: `${layerName}Status`,
+                type: 'line',
+                source: layerName,
+                filter: getStatusFilter(),
+                paint: {
+                    'line-color': ['match', ['get', 'situacao'],
+                        'Conforme', STATUS_COLORS['Conforme'],
+                        'Em adequação', STATUS_COLORS['Em adequação'],
+                        'Não Conforme', STATUS_COLORS['Não Conforme'],
+                        '#ffffff'],
+                    'line-width': 3
                 }
             });
         }
@@ -316,62 +337,75 @@ async function calculateLayerArea(layerName, config) {
     }
 }
 
-// Atualizar resumo
+// Área (ha) de uma camada já carregada
+function layerAreaHa(name) {
+    const src = map.getSource(name);
+    return src && src._data ? turf.area(src._data) / 10000 : null;
+}
+
+// Painel de indicadores do imóvel
+const RL_MINIMA = 0.20; // Reserva Legal mínima fora da Amazônia Legal (Lei 12.651/2012, art. 12)
 async function updateSummary() {
-    let areaPropriedade = 'N/D', areaConsolidada = 'N/D', areaAPP = 'N/D', areaReserva = 'N/D', 
-        areaReservatorio = 'N/D', areaVegetacaoNativa = 'N/D', areaServidaoAdministrativa = 'N/D', countNascentes = 'N/D';
-    try {
-        if (map.getSource('AreaDaPropriedade')) {
-            const data = map.getSource('AreaDaPropriedade')._data;
-            areaPropriedade = (turf.area(data) / 10000).toFixed(2);
-            console.log(`[DEBUG] Área Declarada no CAR calculada: ${areaPropriedade} ha`);
+    const total = layerAreaHa('AreaDaPropriedade');
+    const set = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
+    const bar = (id, pct) => { const el = document.getElementById(id); if (el) el.style.width = `${Math.min(pct, 100)}%`; };
+
+    set('areaPropriedade', total ? fmt(total) : 'N/D');
+
+    const itens = {
+        AreaConsolidada: 'areaConsolidada',
+        APP: 'areaAPP',
+        VegetacaoNativa: 'areaVegetacaoNativa',
+        Reservatorio: 'areaReservatorio',
+        ServidaoAdministrativa: 'areaServidaoAdministrativa'
+    };
+    Object.entries(itens).forEach(([layer, id]) => {
+        const ha = layerAreaHa(layer);
+        set(id, ha !== null ? fmt(ha) : 'N/D');
+        set(`${id}Pct`, ha !== null && total ? `${fmt(ha / total * 100, 1)}%` : '');
+        bar(`${id}Bar`, ha !== null && total ? ha / total * 100 : 0);
+    });
+
+    // Reserva Legal x exigência mínima
+    const rl = layerAreaHa('ReservaLegal');
+    set('areaReserva', rl !== null ? fmt(rl) : 'N/D');
+    if (rl !== null && total) {
+        const pct = rl / total * 100;
+        const exigida = total * RL_MINIMA;
+        const saldo = rl - exigida;
+        set('rlPct', `${fmt(pct, 1)}% do imóvel`);
+        bar('rlBar', pct / 40 * 100); // escala da barra: 0 a 40%
+        const st = document.getElementById('rlStatus');
+        if (st) {
+            st.textContent = saldo >= 0
+                ? `Atende o mínimo de 20% (${fmt(exigida)} ha) · excedente de ${fmt(saldo)} ha`
+                : `Abaixo do mínimo de 20% (${fmt(exigida)} ha) · déficit de ${fmt(-saldo)} ha`;
+            st.className = saldo >= 0 ? 'rl-status ok' : 'rl-status deficit';
         }
-        if (map.getSource('AreaConsolidada')) {
-            const data = map.getSource('AreaConsolidada')._data;
-            areaConsolidada = (turf.area(data) / 10000).toFixed(2);
-            console.log(`[DEBUG] Área Consolidada calculada: ${areaConsolidada} ha`);
-        }
-        if (map.getSource('APP')) {
-            const data = map.getSource('APP')._data;
-            areaAPP = (turf.area(data) / 10000).toFixed(2);
-            console.log(`[DEBUG] Área APP calculada: ${areaAPP} ha`);
-        }
-        if (map.getSource('ReservaLegal')) {
-            const data = map.getSource('ReservaLegal')._data;
-            areaReserva = (turf.area(data) / 10000).toFixed(2);
-            console.log(`[DEBUG] Área Reserva Legal calculada: ${areaReserva} ha`);
-        }
-        if (map.getSource('Reservatorio')) {
-            const data = map.getSource('Reservatorio')._data;
-            areaReservatorio = (turf.area(data) / 10000).toFixed(2);
-            console.log(`[DEBUG] Área Reservatório calculada: ${areaReservatorio} ha`);
-        }
-        if (map.getSource('VegetacaoNativa')) {
-            const data = map.getSource('VegetacaoNativa')._data;
-            areaVegetacaoNativa = (turf.area(data) / 10000).toFixed(2);
-            console.log(`[DEBUG] Área Vegetação Nativa calculada: ${areaVegetacaoNativa} ha`);
-        }
-        if (map.getSource('ServidaoAdministrativa')) {
-            const data = map.getSource('ServidaoAdministrativa')._data;
-            areaServidaoAdministrativa = (turf.area(data) / 10000).toFixed(2);
-            console.log(`[DEBUG] Área Servidão Administrativa calculada: ${areaServidaoAdministrativa} ha`);
-        }
-        if (map.getSource('Nascentes')) {
-            const data = map.getSource('Nascentes')._data;
-            countNascentes = data.features.length;
-            console.log(`[DEBUG] Contagem de Nascentes: ${countNascentes}`);
-        }
-    } catch (error) {
-        console.error('[ERROR] Erro ao atualizar resumo:', error);
+        document.getElementById('rlBar')?.classList.toggle('deficit', saldo < 0);
     }
-    document.getElementById('areaPropriedade').textContent = areaPropriedade;
-    document.getElementById('areaConsolidada').textContent = areaConsolidada;
-    document.getElementById('areaAPP').textContent = areaAPP;
-    document.getElementById('areaReserva').textContent = areaReserva;
-    document.getElementById('areaReservatorio').textContent = areaReservatorio;
-    document.getElementById('areaVegetacaoNativa').textContent = areaVegetacaoNativa;
-    document.getElementById('areaServidaoAdministrativa').textContent = areaServidaoAdministrativa;
-    document.getElementById('countNascentes').textContent = countNascentes;
+
+    const nasc = map.getSource('Nascentes');
+    set('countNascentes', nasc && nasc._data ? nasc._data.features.length : 'N/D');
+    updateStatusCounts();
+}
+
+// Contador do semáforo de conformidade
+function updateStatusCounts() {
+    const contagem = { 'Conforme': 0, 'Em adequação': 0, 'Não Conforme': 0 };
+    Object.keys(layers).forEach(name => {
+        const src = map.getSource(name);
+        if (!src || !src._data || !src._data.features) return;
+        const cb = document.getElementById(`layer${name}`);
+        if (cb && !cb.checked) return;
+        src._data.features.forEach(f => {
+            const s = f.properties && f.properties.situacao;
+            if (s in contagem) contagem[s]++;
+        });
+    });
+    document.getElementById('countConforme').textContent = contagem['Conforme'];
+    document.getElementById('countEmAdequacao').textContent = contagem['Em adequação'];
+    document.getElementById('countNaoConforme').textContent = contagem['Não Conforme'];
 }
 
 // Função para calcular medições
@@ -456,6 +490,8 @@ async function exportToPDF() {
     doc.text('Diagnóstico Ambiental Rural', pageWidth / 2, 30, { align: 'center' });
     doc.setFontSize(20);
     doc.text('Fazenda Modelo', pageWidth / 2, 40, { align: 'center' });
+    doc.setFontSize(11);
+    doc.text('Modelo demonstrativo – dados ilustrativos', pageWidth / 2, 48, { align: 'center' });
     try {
         const logoImg = new Image();
         logoImg.crossOrigin = 'Anonymous';
@@ -501,10 +537,10 @@ async function exportToPDF() {
     doc.text('Resumo Ambiental', margin, tableStartY);
     const summaryData = [
         ['Item', 'Valor'],
-        ['Área Declarada no CAR', document.getElementById('areaPropriedade').textContent + ' ha'],
+        ['Área do imóvel', document.getElementById('areaPropriedade').textContent + ' ha'],
         ['Área Consolidada', document.getElementById('areaConsolidada').textContent + ' ha'],
         ['Área APP', document.getElementById('areaAPP').textContent + ' ha'],
-        ['Reserva Legal', document.getElementById('areaReserva').textContent + ' ha'],
+        ['Reserva Legal', document.getElementById('areaReserva').textContent + ' ha (' + document.getElementById('rlPct').textContent + ')'],
         ['Área Reservatório', document.getElementById('areaReservatorio').textContent + ' ha'],
         ['Vegetação Nativa', document.getElementById('areaVegetacaoNativa').textContent + ' ha'],
         ['Servidão Administrativa', document.getElementById('areaServidaoAdministrativa').textContent + ' ha'],
@@ -568,6 +604,26 @@ map.on('load', async () => {
     hideLoading();
 });
 
+// Clique no mapa: um único pop-up, da feição que está por cima
+function clickableLayers() {
+    return Object.keys(layers).filter(id => id !== 'AreaDaPropriedade' && id !== 'AreaDaPropriedadeOutline' && map.getLayer(id));
+}
+map.on('click', (e) => {
+    if (draw && (draw.getMode() === 'draw_line_string' || draw.getMode() === 'draw_polygon')) return;
+    const feats = map.queryRenderedFeatures(e.point, { layers: clickableLayers() });
+    if (!feats.length) return;
+    const f = feats[0];
+    new mapboxgl.Popup({ maxWidth: '280px' })
+        .setLngLat(e.lngLat)
+        .setHTML(generatePopupContent(f.layer.id, f))
+        .addTo(map);
+});
+map.on('mousemove', (e) => {
+    const ids = clickableLayers();
+    const over = ids.length && map.queryRenderedFeatures(e.point, { layers: ids }).length > 0;
+    map.getCanvas().style.cursor = over ? 'pointer' : '';
+});
+
 // Finalizar medição com botão direito ou toque duplo
 let drawing = false;
 map.on('mousedown', (e) => {
@@ -606,33 +662,19 @@ map.on('draw.update', () => {
 
 // Filtros de conformidade
 function applyFilters() {
-    console.log('[DEBUG] Aplicando filtros de conformidade');
-    const showConforme = document.getElementById('showConforme').checked;
-    const showNaoConforme = document.getElementById('showNaoConforme').checked;
+    const filtro = getStatusFilter();
     Object.keys(layers).forEach(layerName => {
-        if (map.getLayer(layerName) && layerName !== 'AreaDaPropriedade' && layerName !== 'AreaDaPropriedadeOutline') {
-            const props = layerProperties[layerName] || {};
-            const conformidadeKey = props.conformidade || 'conformidade';
-            console.log(`[DEBUG] Aplicando filtro na camada ${layerName} com chave ${conformidadeKey}, Conforme=${showConforme}, Não Conforme=${showNaoConforme}`);
-            map.setFilter(layerName, [
-                'any',
-                ['!', ['has', conformidadeKey]],
-                showConforme ? ['==', ['get', conformidadeKey], 'Conforme'] : ['==', ['get', conformidadeKey], ''],
-                showNaoConforme ? ['==', ['get', conformidadeKey], 'Não Conforme'] : ['==', ['get', conformidadeKey], '']
-            ]);
-        }
+        if (layerName === 'AreaDaPropriedade' || layerName === 'AreaDaPropriedadeOutline') return;
+        [layerName, `${layerName}Status`].forEach(id => {
+            if (map.getLayer(id)) map.setFilter(id, filtro);
+        });
     });
-    updateSummary();
+    updateStatusCounts();
 }
 
 // Eventos de filtros e camadas
-document.getElementById('showConforme').addEventListener('change', () => {
-    console.log('[DEBUG] Filtro Conforme alterado');
-    applyFilters();
-});
-document.getElementById('showNaoConforme').addEventListener('change', () => {
-    console.log('[DEBUG] Filtro Não Conforme alterado');
-    applyFilters();
+Object.values(STATUS_FILTER_IDS).forEach(id => {
+    document.getElementById(id)?.addEventListener('change', applyFilters);
 });
 Object.keys(layers).forEach(layerName => {
     const checkbox = document.getElementById(`layer${layerName}`);
@@ -652,10 +694,11 @@ Object.keys(layers).forEach(layerName => {
                 } else {
                     map.setLayoutProperty(layerName, 'visibility', 'visible');
                 }
+                if (map.getLayer(`${layerName}Status`)) map.setLayoutProperty(`${layerName}Status`, 'visibility', 'visible');
             } else {
-                if (map.getLayer(layerName)) {
-                    map.setLayoutProperty(layerName, 'visibility', 'none');
-                }
+                [layerName, `${layerName}Status`].forEach(id => {
+                    if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', 'none');
+                });
             }
             applyFilters();
             updateLegend();

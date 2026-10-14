@@ -241,3 +241,121 @@ h1 {
     border: 0;
     display: block;
 }
+
+/* Selo de modelo demonstrativo */
+.demo-badge {
+    display: inline-block;
+    background: #fff3cd;
+    color: #664d03;
+    border: 1px solid #ffe08a;
+    border-radius: 999px;
+    padding: 2px 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.dashboard .hint {
+    font-size: 0.75rem;
+    color: #bbbbbb;
+    margin: 0 0 6px;
+}
+
+/* Semáforo de conformidade */
+.status-filters {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.status-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    background: #444;
+    cursor: pointer;
+    user-select: none;
+    transition: opacity .15s, background .15s;
+}
+.status-chip:hover { background: #505050; }
+.btn-check:not(:checked) + .status-chip { opacity: .45; text-decoration: line-through; }
+.btn-check:focus-visible + .status-chip { outline: 2px solid #8ab4f8; }
+.status-chip .dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    flex: 0 0 14px;
+    box-shadow: 0 0 0 2px rgba(255,255,255,.25);
+}
+
+.status-badge {
+    display: inline-block;
+    color: #fff;
+    border-radius: 999px;
+    padding: 1px 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+.popup h3 { font-size: 1rem; margin: 0 0 4px; }
+.popup p { margin: 0; font-size: 0.85rem; }
+
+/* Indicadores do imóvel */
+.summary .kpi-total {
+    background: #444;
+    border-radius: 6px;
+    padding: 8px 10px;
+    margin-bottom: 10px;
+    font-size: 0.8rem;
+    color: #ccc;
+}
+.summary .kpi-total strong { font-size: 1.4rem; color: #fff; }
+.summary .kpi-rl {
+    background: #444;
+    border-radius: 6px;
+    padding: 8px 10px 6px;
+    margin-bottom: 10px;
+}
+.summary .kpi-row { margin-bottom: 8px; }
+.summary .kpi-line {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 0.85rem;
+}
+.summary .kpi-line small { color: #bbb; }
+.summary .bar {
+    position: relative;
+    height: 6px;
+    background: #555;
+    border-radius: 3px;
+    margin-top: 3px;
+}
+.summary .bar-fill {
+    height: 100%;
+    width: 0;
+    background: #8ab4f8;
+    border-radius: 3px;
+    transition: width .6s ease;
+}
+.summary .bar-rl { height: 10px; margin: 6px 0 14px; }
+.summary .bar-rl .bar-fill { background: #2e9e5b; }
+.summary .bar-rl .bar-fill.deficit { background: #d43d3d; }
+.summary .bar-marker {
+    position: absolute;
+    left: 50%; /* 20% numa escala de 0 a 40% */
+    top: -3px;
+    bottom: -3px;
+    width: 2px;
+    background: #fff;
+}
+.summary .bar-marker span {
+    position: absolute;
+    top: 14px;
+    left: -10px;
+    font-size: 0.65rem;
+    color: #ddd;
+}
+.rl-status { display: block; font-size: 0.75rem; margin-top: 2px; }
+.rl-status.ok { color: #7dd3a0; }
+.rl-status.deficit { color: #ff8a8a; }
