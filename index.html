@@ -182,6 +182,28 @@
         </div>
     </div>
 
+    <!-- Visualizador de documentos anexos (licenças etc.) -->
+    <div class="modal fade" id="docModal" tabindex="-1" aria-labelledby="docModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-fullscreen-md-down">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div>
+                        <h5 class="modal-title" id="docModalLabel">Documento</h5>
+                        <small id="docModalInfo" class="text-muted"></small>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <iframe id="docModalFrame" title="Visualização do documento" class="doc-frame"></iframe>
+                </div>
+                <div class="modal-footer">
+                    <a id="docModalOpen" class="btn btn-outline-secondary btn-sm" target="_blank" rel="noopener">Abrir em nova aba</a>
+                    <a id="docModalDownload" class="btn btn-primary btn-sm" download>Baixar PDF</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mapbox/mapbox-gl-draw@1.4.3/dist/mapbox-gl-draw.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>

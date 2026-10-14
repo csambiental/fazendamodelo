@@ -108,6 +108,36 @@ const layerProperties = {
     'Silo': { area: null, conformidade: 'Avaliaçã', detalhes: 'tema', fallbackArea: 0.13, fallbackConformidade: 'Conforme', fallbackDetalhes: 'Silos' }
 };
 
+// Documentos anexos por camada (licenças, outorgas etc.)
+// Para anexar um novo documento a outra camada, basta adicionar uma entrada aqui.
+const layerDocuments = {
+    'Confinamento': {
+        titulo: 'Licença Ambiental Simplificada (LAS)',
+        orgao: 'IAT - Instituto Água e Terra',
+        validade: '13/11/2027',
+        arquivo: 'docs/licenca_confinamento.pdf',
+        aviso: 'Dados pessoais, de localização e de identificação do processo suprimidos (LGPD).'
+    }
+};
+
+// Abre o visualizador do documento anexo de uma camada
+function openLayerDocument(layerName) {
+    const doc = layerDocuments[layerName];
+    if (!doc) return;
+    document.getElementById('docModalLabel').textContent = doc.titulo;
+    document.getElementById('docModalInfo').innerHTML =
+        `<strong>Órgão:</strong> ${doc.orgao} &nbsp;|&nbsp; <strong>Validade:</strong> ${doc.validade}${doc.aviso ? `<br><em>${doc.aviso}</em>` : ''}`;
+    document.getElementById('docModalFrame').src = doc.arquivo;
+    document.getElementById('docModalOpen').href = doc.arquivo;
+    document.getElementById('docModalDownload').href = doc.arquivo;
+    bootstrap.Modal.getOrCreateInstance(document.getElementById('docModal')).show();
+}
+
+// Limpa o PDF ao fechar o visualizador
+document.getElementById('docModal').addEventListener('hidden.bs.modal', () => {
+    document.getElementById('docModalFrame').src = 'about:blank';
+});
+
 // Função para gerar conteúdo do pop-up
 function generatePopupContent(layerName, properties) {
     const displayName = layerNames[layerName] || layerName;
@@ -116,7 +146,9 @@ function generatePopupContent(layerName, properties) {
     const conformidade = props.conformidade && properties[props.conformidade] ? properties[props.conformidade] : props.fallbackConformidade || 'N/A';
     const detalhes = props.detalhes && properties[props.detalhes] ? properties[props.detalhes] : props.fallbackDetalhes || 'N/A';
     console.log(`[DEBUG] Gerando pop-up para ${layerName}: Área=${area}, Conformidade=${conformidade}, Detalhes=${detalhes}`);
-    return `<h3>${displayName}</h3><p>Área: ${area}${props.area || props.fallbackArea ? ' ha' : ''}<br>Conformidade: ${conformidade}<br>Detalhes: ${detalhes}</p>`;
+    const doc = layerDocuments[layerName];
+    const docButton = doc ? `<button type="button" class="btn btn-warning btn-sm w-100 mt-1" onclick="openLayerDocument('${layerName}')">📄 Ver ${doc.titulo.split(' (')[0]}</button>` : '';
+    return `<h3>${displayName}</h3><p>Área: ${area}${props.area || props.fallbackArea ? ' ha' : ''}<br>Conformidade: ${conformidade}<br>Detalhes: ${detalhes}</p>${docButton}`;
 }
 
 // Função para carregar GeoJSON e adicionar camada
@@ -394,11 +426,19 @@ function updateLegend() {
                 const style = config.type === 'circle' ? `background: ${config.paint['circle-color']}; border-radius: 50%; width: 10px; height: 10px;` :
                     `background: ${config.color}; opacity: ${infraLayers.includes(layerName) ? 1.0 : (layerName === 'AreaDaPropriedade' ? 0.15 : 0.3)}`;
                 console.log(`[DEBUG] Adicionando à legenda: ${layerName} -> ${displayName}, Estilo: ${style}`);
-                html += `<i style="${style}"></i> ${displayName}<br>`;
+                if (layerDocuments[layerName]) {
+                    html += `<span class="legend-doc" role="button" tabindex="0" data-doc="${layerName}" title="Clique para ver a licença ambiental"><i style="${style}"></i> ${displayName} 📄</span><br>`;
+                } else {
+                    html += `<i style="${style}"></i> ${displayName}<br>`;
+                }
             }
         });
     });
     legend.innerHTML = html;
+    legend.querySelectorAll('.legend-doc').forEach(item => {
+        item.addEventListener('click', () => openLayerDocument(item.dataset.doc));
+        item.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openLayerDocument(item.dataset.doc); } });
+    });
     console.log('[DEBUG] Legenda atualizada com HTML:', html);
 }
 
