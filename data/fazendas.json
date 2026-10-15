@@ -1,0 +1,185 @@
+{
+  "cliente": {
+    "nome": "Fazenda Modelo",
+    "subtitulo": "Diagnóstico Ambiental Rural · exemplo de projeto CS Consultoria Ambiental",
+    "selo": "Modelo demonstrativo · dados ilustrativos"
+  },
+  "atualizado_em": "2026-10-15",
+  "camadas": [
+    {
+      "id": "consolidada",
+      "nome": "Área consolidada",
+      "arquivo": "data/area_consolidada.geojson",
+      "tipo": "fill",
+      "cor": "#c4a484",
+      "opacidade": 0.25
+    },
+    {
+      "id": "vegetacao",
+      "nome": "Vegetação nativa",
+      "arquivo": "data/vegetacao_nativa.geojson",
+      "tipo": "fill",
+      "cor": "#1b5e20",
+      "opacidade": 0.45
+    },
+    {
+      "id": "reserva",
+      "nome": "Reserva Legal",
+      "arquivo": "data/reserva_legal.geojson",
+      "tipo": "fill",
+      "cor": "#fdd835",
+      "opacidade": 0.35
+    },
+    {
+      "id": "app",
+      "nome": "APP",
+      "arquivo": "data/app.geojson",
+      "tipo": "fill",
+      "cor": "#43a047",
+      "opacidade": 0.45
+    },
+    {
+      "id": "servidao",
+      "nome": "Servidão administrativa",
+      "arquivo": "data/servidao_administrativa.geojson",
+      "tipo": "fill",
+      "cor": "#ab47bc",
+      "opacidade": 0.5
+    },
+    {
+      "id": "hidrografia",
+      "nome": "Hidrografia",
+      "arquivo": "data/hidrografia.geojson",
+      "tipo": "fill",
+      "cor": "#4fc3f7",
+      "opacidade": 0.6
+    },
+    {
+      "id": "reservatorio",
+      "nome": "Reservatório",
+      "arquivo": "data/reservatorio.geojson",
+      "tipo": "fill",
+      "cor": "#1e88e5",
+      "opacidade": 0.6
+    },
+    {
+      "id": "nascentes",
+      "nome": "Nascentes",
+      "arquivo": "data/nascentes.geojson",
+      "tipo": "circle",
+      "cor": "#0d47a1"
+    },
+    {
+      "id": "estruturas",
+      "nome": "Estruturas – conformidade",
+      "arquivo": "data/estruturas.geojson",
+      "tipo": "fill",
+      "cor_por": "situacao",
+      "cores": {
+        "Conforme": "#2e9e5b",
+        "Em adequação": "#e0a100",
+        "Não conforme": "#d43d3d"
+      },
+      "campos": [],
+      "rotulo": false
+    }
+  ],
+  "fazendas": [
+    {
+      "id": "MODELO",
+      "arquivo": "data/area_da_propriedade.geojson",
+      "nome": "Fazenda Modelo",
+      "car": "(omitido no modelo)",
+      "area_ha": 527.79,
+      "cor": "#ff6b4a",
+      "indicadores": {
+        "Vegetação nativa": 81.67,
+        "Área consolidada": 422.92,
+        "APP": 37.27,
+        "Reserva Legal proposta": 163.34,
+        "Reservatório": 7.36,
+        "Servidão administrativa": 26.37,
+        "Saldo de Reserva Legal": 57.78
+      },
+      "pontos": [
+        {
+          "nome": "Confinamento",
+          "coord": [
+            -51.279425,
+            -23.828738
+          ],
+          "descricao": "Confinamento de gado leiteiro · Licença Ambiental Simplificada válida até 13/11/2027",
+          "documento": {
+            "titulo": "Licença Ambiental Simplificada (LAS)",
+            "arquivo": "docs/licenca_confinamento.pdf"
+          }
+        }
+      ],
+      "adequacoes": [
+        {
+          "item": "Licença Ambiental Simplificada do confinamento",
+          "status": "Concluída",
+          "concluida_em": "11/2021",
+          "nota": "Válida até 13/11/2027. Dados pessoais, de localização e de identificação do processo suprimidos.",
+          "documentos": [
+            {
+              "titulo": "Licença Ambiental Simplificada (LAS)",
+              "arquivo": "docs/licenca_confinamento.pdf"
+            }
+          ]
+        },
+        {
+          "item": "Baia de armazenamento de resíduos sólidos (NBR 11.174)",
+          "status": "Concluída"
+        },
+        {
+          "item": "Instalações do confinamento inspecionadas (NR 31)",
+          "status": "Concluída"
+        },
+        {
+          "item": "Reserva Legal acima do mínimo legal de 20%",
+          "status": "Concluída",
+          "nota": "163,34 ha propostos (30,9% do imóvel), excedente de 57,78 ha."
+        },
+        {
+          "item": "Impermeabilização das lagoas de contenção",
+          "status": "Em andamento",
+          "nota": "Exemplo ilustrativo de adequação em execução."
+        },
+        {
+          "item": "Barracão em construção – obra conforme NR 18",
+          "status": "Em andamento"
+        },
+        {
+          "item": "Renovação da Licença Ambiental Simplificada",
+          "status": "Pendente",
+          "nota": "Pedir com 120 dias de antecedência do vencimento (até 16/07/2027).",
+          "documentos": [
+            {
+              "titulo": "Licença Ambiental Simplificada (LAS)",
+              "arquivo": "docs/licenca_confinamento.pdf"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "prazos": [
+    {
+      "titulo": "Prazo para pedir a renovação da licença (120 dias antes)",
+      "data": "2027-07-16",
+      "documento": {
+        "titulo": "Licença Ambiental Simplificada (LAS)",
+        "arquivo": "docs/licenca_confinamento.pdf"
+      }
+    },
+    {
+      "titulo": "Licença Ambiental Simplificada do confinamento",
+      "data": "2027-11-13",
+      "documento": {
+        "titulo": "Licença Ambiental Simplificada (LAS)",
+        "arquivo": "docs/licenca_confinamento.pdf"
+      }
+    }
+  ]
+}

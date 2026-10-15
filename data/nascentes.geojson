@@ -1,1 +1,1 @@
-{"type": "FeatureCollection", "name": "nascentes", "features": [{"type": "Feature", "properties": {"tema": "Nascente", "descricao": "Nascente ou olho d'água perene", "area": 0.0}, "geometry": {"type": "MultiPoint", "coordinates": [[-51.26917237278856, -23.83362398420328]]}}]}
+{"type": "FeatureCollection", "name": "nascentes", "features": [{"type": "Feature", "properties": {"nome": "Nascente", "descricao": "Nascente ou olho d'água perene"}, "geometry": {"type": "MultiPoint", "coordinates": [[-51.26917237278856, -23.83362398420328]]}}]}
